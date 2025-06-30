@@ -20,7 +20,7 @@ public class RazorAnalyzer : DiagnosticAnalyzer
         isEnabledByDefault: true
     );
 
-    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => ImmutableArray.Create(Rule);
+    public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
     public override void Initialize(AnalysisContext context)
     {
@@ -44,7 +44,7 @@ public class RazorAnalyzer : DiagnosticAnalyzer
                     var commentMatches = Regex.Matches(razorContent, commentPattern);
 
                     // Precompute line start positions
-                    string[] lines = razorContent.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    string[] lines = razorContent.Split(["\r\n", "\n"], StringSplitOptions.None);
                     int[] lineStartPositions = new int[lines.Length];
                     int pos = 0;
                     for (int i = 0; i < lines.Length; i++)
@@ -65,12 +65,13 @@ public class RazorAnalyzer : DiagnosticAnalyzer
                         if (commentMatch.Success)
                         {
                             string extracted = commentMatch.Groups[1].Value;
+                            //TODO add razor comment syntax to diagnostics as well.
                         }
                     }
 
                     // Simple regex to extract @code blocks
                     var matches = Regex.Matches(razorContent, @"@code\s*{([^}]*)}", RegexOptions.Singleline);
-
+                    int parsecount = 0;
                     foreach (Match match in matches)
                     {
                         int matchIndex = match.Index;
@@ -79,7 +80,7 @@ public class RazorAnalyzer : DiagnosticAnalyzer
 
                         var codeContent = match.Groups[1].Value;
 
-                        var tree = CSharpSyntaxTree.ParseText(codeContent);
+                        var tree = CSharpSyntaxTree.ParseText(codeContent, path: file.Path + $"_parsed_codeblock{++parsecount}");
                         var root = tree.GetRoot(ctx.CancellationToken);
 
                         var todos = root.DescendantTrivia().Where(t => t.IsKind(SyntaxKind.SingleLineCommentTrivia) && t.ToString().Contains("TODO"));
