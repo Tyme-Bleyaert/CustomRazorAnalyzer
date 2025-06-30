@@ -5,8 +5,7 @@
 	  <IncludeBuildOutput>false</IncludeBuildOutput>
 	  <LangVersion>latest</LangVersion>
 	  <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-	  <EnableDefaultItems>false</EnableDefaultItems>
-	  <EnableDefaultContentItems>false</EnableDefaultContentItems>
+
 	  <StaticWebAssetProjectMode>None</StaticWebAssetProjectMode>
   </PropertyGroup>
 
@@ -18,8 +17,6 @@
 
 	<Target Name="BlockStaticWebAssetsEarly" BeforeTargets="ComputeStaticWebAssets">
 		<ItemGroup>
-			<None Remove="@(None)" />
-			<Content Remove="@(Content)" />
 			<_StaticWebAssetSource Remove="@(_StaticWebAssetSource)" />
 			<DiscoveredStaticWebAsset Remove="@(DiscoveredStaticWebAsset)" />
 			<_PrecompressedAssets Remove="@(_PrecompressedAssets)" />
